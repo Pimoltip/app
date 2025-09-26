@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class WeeklyPage extends StatelessWidget {
-  const WeeklyPage({super.key, required DateTime selectedDay, required List<String> events});
+  final DateTime selectedDay;
+  final List<dynamic> events;   // 👈 แก้เป็น dynamic
+
+  const WeeklyPage({
+    super.key,
+    required this.selectedDay,
+    required this.events,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +112,8 @@ class WeeklyPage extends StatelessWidget {
 
             // วน loop แสดงแต่ละวัน
             ...weekTasks.map((day) {
+              final events = day["events"] as List;
+
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 padding: const EdgeInsets.all(16),
@@ -142,19 +151,21 @@ class WeeklyPage extends StatelessWidget {
                     const SizedBox(height: 8),
 
                     // รายการ event ของวันนั้น
-                    ...(day["events"] as List).map((ev) {
+                    ...events.map((ev) {
                       return Padding(
                         padding: const EdgeInsets.only(left: 8, top: 4),
                         child: Text(
-                          ev["title"] == "" ? ev["code"] : "${ev["code"]}  ${ev["title"]}",
+                          ev["title"] == ""
+                              ? ev["code"]
+                              : "${ev["code"]}  ${ev["title"]}",
                           style: const TextStyle(fontSize: 14),
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),

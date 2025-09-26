@@ -58,8 +58,13 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {},
+
+
+              ElevatedButton( // 👉 ปุ่ม SIGN IN
+                onPressed: () { // ไปหน้า calendar หลัง login
+                  Navigator.pushReplacementNamed(context, '/calendar');
+                },
+                
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xff006866),
                   shape: RoundedRectangleBorder(

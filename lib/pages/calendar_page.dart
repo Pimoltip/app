@@ -57,14 +57,14 @@ class _CalendarPageState extends State<CalendarPage> {
   final eventsForSelected = _getEventsForDay(selected);
 
   Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => WeeklyPage(
-        selectedDay: selected,
-        events: _getEventsForDay(selected),
-      ),
+  context,
+  MaterialPageRoute(
+    builder: (_) => WeeklyPage(
+      selectedDay: selected,
+      events: eventsForSelected,
     ),
-  );
+  ),
+);
 },
 
             calendarFormat: CalendarFormat.month,
