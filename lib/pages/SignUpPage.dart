@@ -91,6 +91,22 @@ class Signuppage extends StatelessWidget { // แก้จาก extends ตั�
                   style: TextStyle(fontSize: 15, color: Colors.white),
                 ),
               ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {Navigator.pushNamed(context, '/login');},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50), // ขอบมน
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 150, vertical: 14),
+                ),
+                child: const Text(
+                  "SIGN IN",
+                  style: TextStyle(fontSize: 15, color: Color(0xff006866)),
+                ),
+              ),
               
             ],
           ),

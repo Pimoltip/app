@@ -58,13 +58,8 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-
-
-              ElevatedButton( // 👉 ปุ่ม SIGN IN
-                onPressed: () { // ไปหน้า calendar หลัง login
-                  Navigator.pushReplacementNamed(context, '/calendar');
-                },
-                
+              ElevatedButton(
+                onPressed: () { Navigator.pushNamed(context, '/calendar');},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xff006866),
                   shape: RoundedRectangleBorder(
@@ -78,6 +73,24 @@ class LoginPage extends StatelessWidget {
                   style: TextStyle(fontSize: 15, color: Colors.white),
                 ),
               ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {Navigator.pushNamed(context, '/signup');},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 253, 253, 253),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50), // ขอบมน
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 150, vertical: 14),
+                ),
+                child: const Text(
+                  "SIGN UP",
+                  style: TextStyle(fontSize: 15, color: Color(0xff006866)),
+                ),
+              ),
+              
+              
             ],
           ),
         ),
