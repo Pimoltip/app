@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//Widget สำหรับแสดง การ์ดกิจกรรมเดี่ยวๆ
+
 class EventData {
   final String time;
   final String code;
