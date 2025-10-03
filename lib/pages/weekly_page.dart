@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../models/event.dart';
 
 class WeeklyPage extends StatelessWidget {
   final DateTime selectedDay;
-  final List<dynamic> events;   // 👈 แก้เป็น dynamic
+  final List<Event> events;   // ใช้ model Event โดยตรง
 
   const WeeklyPage({
     super.key,
@@ -10,104 +11,65 @@ class WeeklyPage extends StatelessWidget {
     required this.events,
   });
 
+  List<DateTime> getWeekDays(DateTime selectedDay) {
+    final firstDayOfWeek = selectedDay.subtract(Duration(days: selectedDay.weekday % 7));
+    return List.generate(7, (i) => firstDayOfWeek.add(Duration(days: i)));
+  }
+
+  Color _getDayColor(int weekday) {
+    switch (weekday) {
+      case DateTime.sunday:
+        return Colors.red.shade200;
+      case DateTime.monday:
+        return Colors.yellow.shade200;
+      case DateTime.tuesday:
+        return Colors.pink.shade200;
+      case DateTime.wednesday:
+        return Colors.green.shade200;
+      case DateTime.thursday:
+        return Colors.orange.shade200;
+      case DateTime.friday:
+        return Colors.blue.shade200;
+      case DateTime.saturday:
+        return Colors.purple.shade200;
+      default:
+        return Colors.grey.shade200;
+    }
+  }
+
+  Color _getCircleColor(int weekday) {
+    switch (weekday) {
+      case DateTime.sunday:
+        return Colors.red.shade700;
+      case DateTime.monday:
+        return Colors.yellow.shade700;
+      case DateTime.tuesday:
+        return Colors.pink.shade400;
+      case DateTime.wednesday:
+        return Colors.green.shade600;
+      case DateTime.thursday:
+        return Colors.orange.shade700;
+      case DateTime.friday:
+        return Colors.blue.shade600;
+      case DateTime.saturday:
+        return Colors.purple.shade600;
+      default:
+        return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // ข้อมูล mock สำหรับ 1 สัปดาห์
-    final weekTasks = [
-      {
-        "day": "5",
-        "weekday": "SUNDAY",
-        "color": Colors.red.shade200,
-        "circleColor": Colors.red.shade700,
-        "events": [],
-      },
-      {
-        "day": "6",
-        "weekday": "MONDAY",
-        "color": Colors.yellow.shade200,
-        "circleColor": Colors.yellow.shade700,
-        "events": [],
-      },
-      {
-        "day": "7",
-        "weekday": "TUESDAY",
-        "color": Colors.pink.shade200,
-        "circleColor": Colors.pink.shade400,
-        "events": [
-          {"code": "วันสุดท้ายของการขอเทียบโอนรายวิชา", "title": ""},
-          {"code": "KH80-203", "title": "Data Structures and Algorithms"},
-        ],
-      },
-      {
-        "day": "8",
-        "weekday": "WEDNESDAY",
-        "color": Colors.green.shade200,
-        "circleColor": Colors.green.shade600,
-        "events": [
-          {"code": "LH4-305", "title": "Information Media for Learning"},
-          {"code": "SC9-333", "title": "C Programming"},
-          {"code": "SC9-333", "title": "C Programming"},
-        ],
-      },
-      {
-        "day": "9",
-        "weekday": "THURSDAY",
-        "color": Colors.orange.shade200,
-        "circleColor": Colors.orange.shade700,
-        "events": [
-          {"code": "LH4-502", "title": "The Art of Living with Others"},
-          {
-            "code": "LH3-303",
-            "title": "Business Management for Social Sustainability",
-          },
-        ],
-      },
-      {
-        "day": "10",
-        "weekday": "FRIDAY",
-        "color": Colors.blue.shade200,
-        "circleColor": Colors.blue.shade600,
-        "events": [
-          {"code": "LH4-604", "title": "English for Job Opportunities"},
-          {"code": "LH2-205", "title": "Software Construction"},
-          {"code": "SC9-330", "title": "Software Construction"},
-        ],
-      },
-      {
-        "day": "11",
-        "weekday": "SATURDAY",
-        "color": Colors.purple.shade200,
-        "circleColor": Colors.purple.shade600,
-        "events": [
-          {"code": "LH4-502", "title": "Computer Architecture"},
-        ],
-      },
-    ];
+    final weekDays = getWeekDays(selectedDay);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("October 2025"),
+        title: Text("สัปดาห์ของ ${selectedDay.day}/${selectedDay.month}/${selectedDay.year}"),
         backgroundColor: Colors.green.shade200,
         leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.calendar_today),
-            onPressed: () {
-              Navigator.pop(context);  // ย้อนกลับไปหน้าก่อนหน้า
-            },
-          ),
-
-           // ปุ่มใหม่ (ไป Dashboard)
-          IconButton(
-            icon: const Icon(Icons.dashboard),
-            onPressed: () {
-              Navigator.pushNamed(context, '/dashboard'); // ✅ ไปหน้า Dashboard
-            },
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -120,28 +82,30 @@ class WeeklyPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // วน loop แสดงแต่ละวัน
-            ...weekTasks.map((day) {
-              final events = day["events"] as List;
+            ...weekDays.map((day) {
+              final dayEvents = events.where((e) =>
+                e.date.year == day.year &&
+                e.date.month == day.month &&
+                e.date.day == day.day).toList();
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: day["color"] as Color,
+                  color: _getDayColor(day.weekday),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // วันและเลขวันที่
+                    // หัววัน
                     Row(
                       children: [
                         CircleAvatar(
                           radius: 20,
-                          backgroundColor: day["circleColor"] as Color,
+                          backgroundColor: _getCircleColor(day.weekday),
                           child: Text(
-                            day["day"] as String,
+                            "${day.day}",
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -150,28 +114,27 @@ class WeeklyPage extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          day["weekday"] as String,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
+                          _weekdayName(day.weekday),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
 
-                    // รายการ event ของวันนั้น
-                    ...events.map((ev) {
-                      return Padding(
+                    // รายการ events
+                    if (dayEvents.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.only(left: 8, top: 4),
+                        child: Text(""),
+                      )
+                    else
+                      ...dayEvents.map((ev) => Padding(
                         padding: const EdgeInsets.only(left: 8, top: 4),
                         child: Text(
-                          ev["title"] == ""
-                              ? ev["code"]
-                              : "${ev["code"]}  ${ev["title"]}",
+                          "${ev.title} - ${ev.description}",
                           style: const TextStyle(fontSize: 14),
                         ),
-                      );
-                    }),
+                      )),
                   ],
                 ),
               );
@@ -180,5 +143,18 @@ class WeeklyPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _weekdayName(int weekday) {
+    switch (weekday) {
+      case DateTime.sunday: return "SUNDAY";
+      case DateTime.monday: return "MONDAY";
+      case DateTime.tuesday: return "TUESDAY";
+      case DateTime.wednesday: return "WEDNESDAY";
+      case DateTime.thursday: return "THURSDAY";
+      case DateTime.friday: return "FRIDAY";
+      case DateTime.saturday: return "SATURDAY";
+      default: return "";
+    }
   }
 }
