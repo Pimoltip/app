@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'add_event_page.dart';
-import 'package:plannerapp/pages/weekly_page.dart'; // 👈 import WeeklyPage
+import 'package:plannerapp/pages/weekly_page.dart';
+
+// ➕ import repository + model
+import '../repo/event_repository.dart';
+import '../models/event.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -14,15 +18,31 @@ class _CalendarPageState extends State<CalendarPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  final Map<DateTime, List<String>> _events = {
-    DateTime.utc(2025, 10, 7):  ['วันสุดท้ายของการขอเทียบโอนรายวิชา'],
-    DateTime.utc(2025, 10, 13): ['วันคล้ายวันสวรรคต ร.9', 'นิสิตกรอกแบบประเมินการสอนผ่านเว็บ ครั้งที่ 2'],
-    DateTime.utc(2025, 10, 17): ['นิสิตกรอกแบบประเมินการสอนวันสุดท้าย', 'วันสุดท้ายของการส่งใบจองการศึกษาภาคปลาย'],
-    DateTime.utc(2025, 10, 21): ['วันสอบไล่***'],
-  };
+  final EventRepository repo = EventRepository();
+  Map<DateTime, List<Event>> eventsMap = {};
 
-  List<String> _getEventsForDay(DateTime day) =>
-      _events[DateTime.utc(day.year, day.month, day.day)] ?? [];
+  @override
+  void initState() {
+    super.initState();
+    _loadEvents();
+  }
+
+  Future<void> _loadEvents() async {
+    final events = await repo.loadEvents();
+    setState(() {
+      eventsMap = {
+        for (var e in events)
+          DateTime(e.date.year, e.date.month, e.date.day): [
+            ...(eventsMap[DateTime(e.date.year, e.date.month, e.date.day)] ?? []),
+            e
+          ]
+      };
+    });
+  }
+
+  List<Event> _getEventsForDay(DateTime day) {
+    return eventsMap[DateTime(day.year, day.month, day.day)] ?? [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,40 +53,39 @@ class _CalendarPageState extends State<CalendarPage> {
         title: const Text('Planner Calendar'),
         actions: [
           IconButton(
-  icon: const Icon(Icons.calendar_month),
-  tooltip: 'ไปยัง Weekly',
-  onPressed: () {
-    Navigator.pushNamed(context, '/weekly');
-  },
-),
-        ],  
+            icon: const Icon(Icons.calendar_month),
+            tooltip: 'ไปยัง Weekly',
+            onPressed: () {
+              Navigator.pushNamed(context, '/weekly');
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
-          TableCalendar(
+          TableCalendar<Event>(
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
             focusedDay: _focusedDay,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
             onDaySelected: (selected, focused) {
-  setState(() {
-    _selectedDay = selected;
-    _focusedDay  = focused;
-  });
+              setState(() {
+                _selectedDay = selected;
+                _focusedDay = focused;
+              });
 
-  final eventsForSelected = _getEventsForDay(selected);
+              final eventsForSelected = _getEventsForDay(selected);
 
-  Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (_) => WeeklyPage(
-      selectedDay: selected,
-      events: eventsForSelected,
-    ),
-  ),
-);
-},
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => WeeklyPage(
+                    selectedDay: selected,
+                    events: eventsForSelected.map((e) => e.title).toList(),
+                  ),
+                ),
+              );
+            },
             calendarFormat: CalendarFormat.month,
             startingDayOfWeek: StartingDayOfWeek.sunday,
             eventLoader: _getEventsForDay,
@@ -88,8 +107,9 @@ class _CalendarPageState extends State<CalendarPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('calendars',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  const Text('Events',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                   const SizedBox(height: 8),
                   Expanded(
                     child: ListView.builder(
@@ -103,11 +123,12 @@ class _CalendarPageState extends State<CalendarPage> {
                               backgroundColor: Colors.amber.shade200,
                               child: Text(
                                 '${(_selectedDay ?? _focusedDay).day}',
-                                style: const TextStyle(fontSize: 12, color: Colors.black),
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.black),
                               ),
                             ),
                             const SizedBox(width: 12),
-                            Expanded(child: Text(events[i])),
+                            Expanded(child: Text(events[i].title)),
                           ],
                         ),
                       ),
@@ -120,13 +141,12 @@ class _CalendarPageState extends State<CalendarPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-  child: const Icon(Icons.add),
-  onPressed: () async {
-    await Navigator.pushNamed(context, AddEventPage.routeName);
-    setState(() {}); // refresh หลังกลับมา
-  },
-),
-
+        child: const Icon(Icons.add),
+        onPressed: () async {
+          await Navigator.pushNamed(context, AddEventPage.routeName);
+          await _loadEvents(); // refresh หลังเพิ่ม event
+        },
+      ),
     );
   }
 }
