@@ -6,7 +6,7 @@ import 'appointment/schedule_page.dart';
 
 // ✅ import ของ Planner App
 import 'package:plannerapp/pages/calendar_page.dart';
-import 'package:plannerapp/pages/add_event_page.dart';
+import 'package:plannerapp/pages/AddEventPage.dart';
 import 'package:plannerapp/pages/dashboard_page.dart';
 import 'package:plannerapp/pages/new_project_page.dart';
 import 'package:plannerapp/pages/weekly_page.dart';
@@ -45,8 +45,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const Signuppage(),
         '/calendar': (context) => const CalendarPage(), // ✅ ไม่มี back button
-        '/weekly': (context) =>
-            WeeklyPage(selectedDay: DateTime.now(), events: []),
+        AddEventPage.routeName: (_) => const AddEventPage(),
+        '/weekly': (context) => WeeklyPage(selectedDay: DateTime.now(), events: []),
         '/dashboard': (context) => const DashboardPage(),
         '/add': (context) => const AddEventPage(),
         '/new_project': (context) => const NewProjectPage(),

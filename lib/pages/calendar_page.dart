@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'add_event_page.dart';
+import 'AddEventPage.dart';
 import 'package:plannerapp/pages/weekly_page.dart';
 
 // ➕ import repository + model
@@ -20,7 +20,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   final EventRepository repo = EventRepository();
   Map<DateTime, List<Event>> eventsMap = {};
-
+ 
   @override
   void initState() {
     super.initState();
@@ -28,18 +28,17 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Future<void> _loadEvents() async {
-    final events = await repo.loadEvents();
-    setState(() {
-      eventsMap = {
-        for (var e in events)
-          DateTime(e.date.year, e.date.month, e.date.day): [
-            ...(eventsMap[DateTime(e.date.year, e.date.month, e.date.day)] ?? []),
-            e
-          ]
-      };
-    });
-  }
-
+  final events = await repo.loadEvents();
+  setState(() {
+    eventsMap.clear();
+    for (var e in events) {
+      final key = DateTime(e.date.year, e.date.month, e.date.day);
+      eventsMap.putIfAbsent(key, () => []);
+      eventsMap[key]!.add(e);
+    }
+    print("✅ Loaded events: ${eventsMap}");
+  });
+}
   List<Event> _getEventsForDay(DateTime day) {
     return eventsMap[DateTime(day.year, day.month, day.day)] ?? [];
   }
@@ -77,14 +76,14 @@ class _CalendarPageState extends State<CalendarPage> {
               final eventsForSelected = _getEventsForDay(selected);
 
               Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => WeeklyPage(
-                    selectedDay: selected,
-                    events: eventsForSelected.map((e) => e.title).toList(),
-                  ),
-                ),
-              );
+  context,
+  MaterialPageRoute(
+    builder: (_) => WeeklyPage(
+      selectedDay: selected,
+      events: _getEventsForDay(selected), // ส่ง event ของวันนั้นไป WeeklyPage
+    ),
+  ),
+);
             },
             calendarFormat: CalendarFormat.month,
             startingDayOfWeek: StartingDayOfWeek.sunday,
@@ -93,60 +92,100 @@ class _CalendarPageState extends State<CalendarPage> {
               titleCentered: true,
               formatButtonVisible: false,
             ),
-            calendarStyle: const CalendarStyle(outsideDaysVisible: false),
+            calendarStyle: const CalendarStyle(
+  outsideDaysVisible: false,
+  markerDecoration: BoxDecoration(
+    color: Colors.red,
+    shape: BoxShape.circle,
+  ),
+),
           ),
           Expanded(
-            child: Container(
-              margin: const EdgeInsets.all(12),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.lightBlueAccent),
-              ),
-              child: Column(
+  child: Container(
+    margin: const EdgeInsets.all(12),
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: Colors.lightBlueAccent),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Events',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: ListView.builder(
+            itemCount: events.length,
+            itemBuilder: (_, i) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Events',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                  const SizedBox(height: 8),
+                  CircleAvatar(
+                    radius: 14,
+                    backgroundColor: Colors.amber.shade200,
+                    child: Text(
+                      '${(_selectedDay ?? _focusedDay).day}',
+                      style: const TextStyle(fontSize: 12, color: Colors.black),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: events.length,
-                      itemBuilder: (_, i) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 14,
-                              backgroundColor: Colors.amber.shade200,
-                              child: Text(
-                                '${(_selectedDay ?? _focusedDay).day}',
-                                style: const TextStyle(
-                                    fontSize: 12, color: Colors.black),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(child: Text(events[i].title)),
-                          ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          events[i].title,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      ),
+                        const SizedBox(height: 2),
+                        Text(
+                          events[i].description,
+                          style: const TextStyle(
+                              fontSize: 13, color: Colors.grey),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
           ),
+        ),
+
+        // ✅ ปุ่ม Home และ Add ในระนาบเดียวกัน ตรึงที่ล่างของกรอบฟ้า
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            FloatingActionButton(
+              heroTag: "homeBtn",
+              
+              child: const Icon(Icons.home),
+              onPressed: () {
+                Navigator.pushNamed(context, '/dashboard');
+              },
+            ),
+            FloatingActionButton(
+              heroTag: "addBtn",
+              
+              child: const Icon(Icons.add),
+              onPressed: () async {
+                await Navigator.pushNamed(context, AddEventPage.routeName);
+                await _loadEvents();
+              },
+            ),
+          ],
+        ),
+      ],
+    ),
+  ),
+),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () async {
-          await Navigator.pushNamed(context, AddEventPage.routeName);
-          await _loadEvents(); // refresh หลังเพิ่ม event
-        },
-      ),
+    ),
     );
   }
 }
