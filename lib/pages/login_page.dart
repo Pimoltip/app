@@ -1,0 +1,131 @@
+import 'package:flutter/material.dart';
+import '../repo/user_repository.dart'; // ✅ ใช้ repo ที่จัดการ JSON
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final emailCtrl = TextEditingController();
+  final passCtrl = TextEditingController();
+  final repo = UserRepository();
+
+  void _login() async {
+    final email = emailCtrl.text.trim();
+    final pass = passCtrl.text.trim();
+
+    if (email.isEmpty || pass.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("กรุณากรอกอีเมลและรหัสผ่าน")),
+      );
+      return;
+    }
+
+    final success = await repo.validateUser(email, pass);
+
+    if (success) {
+      Navigator.pushReplacementNamed(context, '/calendar');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("อีเมลหรือรหัสผ่านไม่ถูกต้อง")),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "KU",
+                style: TextStyle(
+                  fontSize: 170,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff006866),
+                  height: 0.9,
+                ),
+              ),
+              Container(width: 230, height: 30, color: const Color(0xffb2bb1f)),
+              const Text(
+                "PLANER",
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xff006866),
+                ),
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: emailCtrl,
+                decoration: InputDecoration(
+                  labelText: "Enter Email",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: passCtrl,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: "Enter Password",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _login, // ✅ ใช้ฟังก์ชัน login
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xff006866),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 150,
+                    vertical: 14,
+                  ),
+                ),
+                child: const Text(
+                  "SIGN IN",
+                  style: TextStyle(fontSize: 15, color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/signup');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 253, 253, 253),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 150,
+                    vertical: 14,
+                  ),
+                ),
+                child: const Text(
+                  "SIGN UP",
+                  style: TextStyle(fontSize: 15, color: Color(0xff006866)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
