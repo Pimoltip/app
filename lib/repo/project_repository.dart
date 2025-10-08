@@ -54,13 +54,23 @@ class ProjectRepository {
     );
   }
 
-  /// ✅ Delete project
+  /// ✅ Delete project by ID
   Future<void> deleteProject(int id) async {
     final db = await _dbService.database;
     await db.delete(
       DatabaseService.projectsTable,
       where: 'id = ?',
       whereArgs: [id],
+    );
+  }
+
+  /// ✅ Delete project by name
+  Future<void> deleteProjectByName(String name) async {
+    final db = await _dbService.database;
+    await db.delete(
+      DatabaseService.projectsTable,
+      where: 'name = ?',
+      whereArgs: [name],
     );
   }
 
