@@ -1,0 +1,158 @@
+[
+  {
+    "title": "วันขึ้นปีใหม่",
+    "date": "2025-01-01",
+    "description": "New Year's Day 🎉",
+    "color": "#FF4081"
+  },
+  {
+    "title": "วันมาฆบูชา",
+    "date": "2025-02-12",
+    "description": "Makha Bucha Day 🕯️",
+    "color": "#3F51B5"
+  },
+  {
+    "title": "วันจักรี",
+    "date": "2025-04-06",
+    "description": "Chakri Memorial Day 👑",
+    "color": "#009688"
+  },
+  {
+    "title": "วันหยุดชดเชยวันจักรี",
+    "date": "2025-04-07",
+    "description": "Substitution Day for Chakri Day",
+    "color": "#009688"
+  },
+  {
+    "title": "วันสงกรานต์",
+    "date": "2025-04-13",
+    "description": "Songkran Festival Day 1 💧",
+    "color": "#FFC107"
+  },
+  {
+    "title": "วันสงกรานต์",
+    "date": "2025-04-14",
+    "description": "Songkran Festival Day 2 (Family Day) 👨‍👩‍👧‍👦",
+    "color": "#FFC107"
+  },
+  {
+    "title": "วันสงกรานต์",
+    "date": "2025-04-15",
+    "description": "Songkran Festival Day 3 💦",
+    "color": "#FFC107"
+  },
+  {
+    "title": "วันหยุดชดเชยวันสงกรานต์",
+    "date": "2025-04-16",
+    "description": "Substitution Day for Songkran Day",
+    "color": "#FFC107"
+  },
+  {
+    "title": "วันแรงงานแห่งชาติ",
+    "date": "2025-05-01",
+    "description": "National Labour Day (Bank/Private Sector Holiday) 🛠️",
+    "color": "#F44336"
+  },
+  {
+    "title": "วันฉัตรมงคล",
+    "date": "2025-05-04",
+    "description": "Coronation Day ⚜️",
+    "color": "#4CAF50"
+  },
+  {
+    "title": "วันหยุดชดเชยวันฉัตรมงคล",
+    "date": "2025-05-05",
+    "description": "Substitution Day for Coronation Day",
+    "color": "#4CAF50"
+  },
+  {
+    "title": "วันพืชมงคล",
+    "date": "2025-05-09",
+    "description": "Royal Ploughing Ceremony Day (Government Holiday) 🌾",
+    "color": "#795548"
+  },
+  {
+    "title": "วันวิสาขบูชา",
+    "date": "2025-05-11",
+    "description": "Visakha Bucha Day 🙏",
+    "color": "#673AB7"
+  },
+  {
+    "title": "วันหยุดชดเชยวันวิสาขบูชา",
+    "date": "2025-05-12",
+    "description": "Substitution Day for Visakha Bucha Day",
+    "color": "#673AB7"
+  },
+  {
+    "title": "วันหยุดพิเศษ",
+    "date": "2025-06-02",
+    "description": "Special Government Holiday (May be subject to official confirmation) 📅",
+    "color": "#00BCD4"
+  },
+  {
+    "title": "วันเฉลิมพระชนมพรรษาฯ พระบรมราชินี",
+    "date": "2025-06-03",
+    "description": "H.M. Queen Suthida's Birthday 👸",
+    "color": "#E91E63"
+  },
+  {
+    "title": "วันอาสาฬหบูชา",
+    "date": "2025-07-10",
+    "description": "Asanha Bucha Day ☸️",
+    "color": "#FF5722"
+  },
+  {
+    "title": "วันเข้าพรรษา",
+    "date": "2025-07-11",
+    "description": "Buddhist Lent Day (Not a public holiday, but often a government holiday) 🟡",
+    "color": "#FF5722"
+  },
+  {
+    "title": "วันเฉลิมพระชนมพรรษาพระบาทสมเด็จพระเจ้าอยู่หัว",
+    "date": "2025-07-28",
+    "description": "H.M. King Rama X's Birthday 👑",
+    "color": "#2196F3"
+  },
+  {
+    "title": "วันหยุดพิเศษ",
+    "date": "2025-08-11",
+    "description": "Special Government Holiday (Before Mother's Day) 📅",
+    "color": "#00BCD4"
+  },
+  {
+    "title": "วันเฉลิมพระชนมพรรษาฯ พระบรมราชชนนีพันปีหลวง / วันแม่แห่งชาติ",
+    "date": "2025-08-12",
+    "description": "Queen Sirikit's Birthday / Mother's Day 💙",
+    "color": "#1976D2"
+  },
+  {
+    "title": "วันนวมินทรมหาราช",
+    "date": "2025-10-13",
+    "description": "Day of King Rama IX's passing 🕊️",
+    "color": "#8E24AA"
+  },
+  {
+    "title": "วันปิยมหาราช",
+    "date": "2025-10-23",
+    "description": "King Chulalongkorn Memorial Day 🇹🇭",
+    "color": "#9E9E9E"
+  },
+  {
+    "title": "วันพ่อแห่งชาติ",
+    "date": "2025-12-05",
+    "description": "H.M. King Rama IX's Birthday / Father's Day 💛",
+    "color": "#FFEB3B"
+  },
+  {
+    "title": "วันรัฐธรรมนูญ",
+    "date": "2025-12-10",
+    "description": "Constitution Day 🏛️",
+    "color": "#7B1FA2"
+  },
+  {
+    "title": "วันสิ้นปี",
+    "date": "2025-12-31",
+    "description": "New Year's Eve 🥂",
+    "color": "#FF9800"
+  }
+]
