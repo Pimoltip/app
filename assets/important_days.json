@@ -178,5 +178,24 @@
     "date": "2025-12-25",
     "description": "Christmas🎄",
     "color": "#FFB74D"
-  }
+  },
+  {
+    "title": "วันวาเลนไทน์",
+    "date": "2025-02-14",
+    "description": "Valentine's Day💘 ",
+    "color": "#FFB74D"
+  },
+  {
+    "title": "วันตรุษจีน",
+    "date": "2025-01-29",
+    "description": "Chinese New Year🧧",
+    "color": "#FFB74D"
+  },
+  {
+    "title": "วันออกพรรษา",
+    "date": "2025-10-07",
+    "description": "The end of Buddhist Lent ",
+    "color": "#FFB74D"
+  }  
 ]
+
