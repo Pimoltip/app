@@ -29,7 +29,6 @@ class ProjectCard extends StatelessWidget {
     final inProgressProjects = projects
         .where((p) => p.progress > 0 && p.progress < 100)
         .length;
-    final completedProjects = projects.where((p) => p.progress == 100).length;
 
     // ⏰ คำนวณ countdown (โปรเจกต์ที่มี deadline และยังไม่ครบกำหนด)
     int countdownProjects = 0;
@@ -250,6 +249,15 @@ class _DashboardPageState extends State<DashboardPage> {
           ],
         ),
         actions: [
+          // 🗑️ ปุ่มลบโปรเจกต์
+          IconButton(
+            onPressed: () async {
+              Navigator.pop(context); // ปิด Dialog ก่อน
+              await _deleteProject(project);
+            },
+            icon: const Icon(Icons.delete, color: Colors.red),
+            tooltip: 'ลบโปรเจกต์',
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('ปิด'),
@@ -269,6 +277,56 @@ class _DashboardPageState extends State<DashboardPage> {
         ],
       ),
     );
+  }
+
+  /// 🗑️ ลบโปรเจกต์
+  Future<void> _deleteProject(Project project) async {
+    // แสดง confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('ยืนยันการลบ'),
+        content: Text('คุณต้องการลบโปรเจกต์ "${project.name}" หรือไม่?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('ยกเลิก'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('ลบ', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await _projectRepo.deleteProjectByName(project.name);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('ลบโปรเจกต์ "${project.name}" สำเร็จแล้ว'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // รีเฟรชรายการโปรเจกต์
+          await _loadProjects();
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('เกิดข้อผิดพลาด: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
   }
 
   @override
