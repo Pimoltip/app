@@ -18,21 +18,6 @@ class ProjectRepository {
     });
   }
 
-  /// ✅ Load projects by tag
-  Future<List<Project>> loadProjectsByTag(String tag) async {
-    final db = await _dbService.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      DatabaseService.projectsTable,
-      where: 'tag = ?',
-      whereArgs: [tag],
-      orderBy: 'created_at DESC',
-    );
-
-    return List.generate(maps.length, (i) {
-      return Project.fromMap(maps[i]);
-    });
-  }
-
   /// ✅ Add new project to SQLite
   Future<void> addProject(Project project) async {
     final db = await _dbService.database;
@@ -104,3 +89,4 @@ class ProjectRepository {
     });
   }
 }
+
