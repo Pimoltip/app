@@ -1,6 +1,5 @@
 [
     {
-      "id": 1,
       "title": "Mock Event",
       "date": "2025-10-10",
       "time": "10:00",
@@ -8,4 +7,5 @@
       "alarmOn": true
     }
   ]
+
   
