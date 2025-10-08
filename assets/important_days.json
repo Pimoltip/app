@@ -154,5 +154,29 @@
     "date": "2025-12-31",
     "description": "New Year's Eve 🥂",
     "color": "#FF9800"
+  },
+  {
+    "title": "วันฮาโลวีน",
+    "date": "2025-10-31",
+    "description": "Halloween👻",
+    "color": "#FFB74D"
+  },
+  {
+    "title": "วันลอยกระทง",
+    "date": "2025-11-15",
+    "description": "Loy Krathong Day🪷",
+    "color": "#FFB74D"
+  },
+  {
+    "title": "วันคริสต์มาสอีฟ",
+    "date": "2025-12-24",
+    "description": "Christmas Eve🐰",
+    "color": "#FFB74D"
+  },
+  {
+    "title": "วันคริสต์มาส",
+    "date": "2025-12-25",
+    "description": "Christmas🎄",
+    "color": "#FFB74D"
   }
 ]
