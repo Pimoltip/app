@@ -2,11 +2,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'ProjectCalendar.dart';
+import 'project_calendar.dart';
 import '../models/important_day.dart';
-import '../models/project.dart';
-import '../models/event.dart';
-import '../repo/json_file_manager.dart';
 import '../repo/project_repository.dart';
 import '../repo/event_repository.dart';
 
@@ -26,7 +23,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
   // state วัน/สัปดาห์
   late DateTime _today;
   late List<DateTime> _weekDays; // 7 วัน (เริ่มวันอาทิตย์)
-  int _selectedIndex = 3; // 0=Sun..6=Sat
+  int _selectedIndex = 3; // 0=Sun..6=Satพ
 
   // ข้อมูลรวมแบบเดียวกับ ProjectCalendar
   List<ImportantDay> _allDays = [];
@@ -57,12 +54,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
   // -----------------------------
   Future<void> _loadAllData() async {
     try {
-      // เตรียมไฟล์โลคัล (เหมือนใน ProjectCalendar)
-      await JsonFileManager('events.json').copyFromAsset('assets/events.json');
-      final addEventFM = JsonFileManager('addevent.json');
-      if ((await addEventFM.readJson()).isEmpty) {
-        await addEventFM.writeJson([]); // สร้างไฟล์ว่างถ้ายังไม่มี
-      }
+      // ✅ ไม่ใช้ JsonFileManager แล้ว ใช้ SQLite แทน
 
       // อ่านจาก assets
       final impData = await rootBundle.loadString('assets/important_days.json');
@@ -109,12 +101,13 @@ class _AppointmentPageState extends State<AppointmentPage> {
             ),
           );
 
+      // ✅ system events จาก assets/events.json
       final sysEvents = evtJson.map(
         (e) => ImportantDay(
           title: e['title'] ?? 'System Event',
           date: e['date'],
           description: e['note'] ?? '',
-          color: '#42A5F5', // ฟ้า: system
+          color: '#42A5F5',
         ),
       );
 
@@ -133,8 +126,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
         _allDays = [
           ...impDays,
           ...kuDays,
-          ...projDays,
           ...sysEvents,
+          ...projDays,
           ...userEvents,
         ];
       });
@@ -188,11 +181,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     final day = _weekDays[_selectedIndex];
     final key = _ymd(day);
 
-    // อ่าน raw จาก assets + local สำหรับการดึง time
-    final addEventFM = JsonFileManager('addevent.json');
-    final List userJson = await addEventFM.readJson(); // มี time (HH:mm)
-    final evtData = await rootBundle.loadString('assets/events.json');
-    final List evtJson = json.decode(evtData) as List; // มี time เช่นกัน
+    // ✅ ไม่ใช้ JsonFileManager แล้ว ใช้ SQLite แทน
 
     // ✅ ดึงข้อมูลจาก SQLite
     final sqliteEvents = await _eventRepo.loadEvents();
@@ -200,39 +189,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
     // สร้าง map "date -> list of time items" จากสองแหล่งที่มี time
     final timed = <_TimedItem>[];
 
-    // 1) user events (addevent.json) - ข้อมูลเก่า
-    for (final e in userJson) {
-      if (e is Map && (e['date'] ?? '') == key) {
-        final String? time = (e['time'] as String?);
-        final parsed = _tryParseTime(time);
-        timed.add(
-          _TimedItem(
-            hour: parsed?.$1,
-            minute: parsed?.$2,
-            title: e['title'] ?? 'Untitled Event',
-            detail: e['note'] ?? '',
-            colorHex: '#03A9F4',
-          ),
-        );
-      }
-    }
+    // ✅ ไม่ใช้ addevent.json แล้ว ใช้ SQLite แทน
 
-    // 2) system events (events.json)
-    for (final e in evtJson) {
-      if (e is Map && (e['date'] ?? '') == key) {
-        final String? time = (e['time'] as String?);
-        final parsed = _tryParseTime(time);
-        timed.add(
-          _TimedItem(
-            hour: parsed?.$1,
-            minute: parsed?.$2,
-            title: e['title'] ?? 'System Event',
-            detail: e['note'] ?? '',
-            colorHex: '#42A5F5',
-          ),
-        );
-      }
-    }
+    // ✅ ไม่มี system events จาก assets/events.json แล้ว
 
     // ✅ 3) user events จาก SQLite (ไม่มี time field ใน Event model)
     for (final e in sqliteEvents) {
@@ -271,17 +230,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
     });
   }
 
-  /// รับ "HH:mm" → (hour, minute) หรือ null ถ้าแปลงไม่ได้
-  (int, int)? _tryParseTime(String? hhmm) {
-    if (hhmm == null || !hhmm.contains(':')) return null;
-    final parts = hhmm.split(':');
-    if (parts.length != 2) return null;
-    final h = int.tryParse(parts[0]);
-    final m = int.tryParse(parts[1]);
-    if (h == null || m == null) return null;
-    return (h, m);
-  }
-
   // -----------------------------
   // Build
   // -----------------------------
@@ -307,6 +255,27 @@ class _AppointmentPageState extends State<AppointmentPage> {
         ),
         title: Text(title, style: const TextStyle(color: Colors.black)),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.green),
+            onPressed: () async {
+              final scaffoldMessenger = ScaffoldMessenger.of(context);
+              final result = await Navigator.pushNamed(context, '/add');
+
+              // รีเฟรชข้อมูลหลังจากเพิ่ม event ใหม่
+              if (result != null && mounted) {
+                await _loadAllData();
+                await _rebuildSelectedDayLists();
+                scaffoldMessenger.showSnackBar(
+                  const SnackBar(
+                    content: Text("เพิ่ม Event ใหม่แล้ว! 🎉"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -475,9 +444,9 @@ class _EventPill extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: color.withOpacity(.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Row(
         children: [
@@ -554,7 +523,7 @@ class _TimelineCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(.4)),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
         boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 3)],
       ),
       child: Row(
