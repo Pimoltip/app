@@ -41,9 +41,9 @@ dev_dependencies:
 flutter:
   # ไฟล์ข้อมูลที่ใช้ในแอป
   assets:
-    - assets/events.json
     - assets/important_days.json
     - assets/ku_calendar.json
+    - assets/events.json
   
   # ใช้ Material Design
   uses-material-design: true
