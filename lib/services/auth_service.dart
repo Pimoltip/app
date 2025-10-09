@@ -1,31 +1,50 @@
+// Import Flutter framework สำหรับ debugPrint
+import 'package:flutter/foundation.dart';
+
+// Import สำหรับเก็บข้อมูลการตั้งค่า
 import 'package:shared_preferences/shared_preferences.dart';
+
+// Import models และ repositories
 import '../models/user.dart';
 import '../repo/user_repository.dart';
 
-/// ✅ Authentication Service สำหรับจัดการ login/logout และ session
+/// 🔐 Authentication Service สำหรับจัดการการเข้าสู่ระบบ
+/// 
+/// จัดการการ login, logout, และ session ของผู้ใช้
+/// ใช้ SharedPreferences เก็บข้อมูลการเข้าสู่ระบบ
 class AuthService {
-  static const String _isLoggedInKey = 'is_logged_in';
-  static const String _userIdKey = 'user_id';
-  static const String _userEmailKey = 'user_email';
-  static const String _userNameKey = 'user_name';
-  static const String _loginTimeKey = 'login_time';
+  // คีย์สำหรับเก็บข้อมูลใน SharedPreferences
+  static const String _isLoggedInKey = 'is_logged_in';    // สถานะการเข้าสู่ระบบ
+  static const String _userIdKey = 'user_id';             // ID ของผู้ใช้
+  static const String _userEmailKey = 'user_email';       // อีเมลของผู้ใช้
+  static const String _userNameKey = 'user_name';         // ชื่อผู้ใช้
+  static const String _loginTimeKey = 'login_time';       // เวลาที่เข้าสู่ระบบ
 
+  // Repository สำหรับจัดการข้อมูลผู้ใช้
   final UserRepository _userRepo = UserRepository();
 
-  /// ✅ ตรวจสอบว่าผู้ใช้ login อยู่หรือไม่
+  /// 🔍 ตรวจสอบว่าผู้ใช้เข้าสู่ระบบอยู่หรือไม่
+  /// 
+  /// อ่านข้อมูลจาก SharedPreferences
+  /// ส่งกลับ true ถ้าผู้ใช้เข้าสู่ระบบอยู่
   Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_isLoggedInKey) ?? false;
   }
 
-  /// ✅ เก็บข้อมูล session หลัง login สำเร็จ
+  /// 💾 เก็บข้อมูล session หลังเข้าสู่ระบบสำเร็จ
+  /// 
+  /// เก็บข้อมูลผู้ใช้ลงใน SharedPreferences
+  /// เพื่อใช้ในการตรวจสอบ session ในครั้งต่อไป
   Future<void> saveLoginSession(User user) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_isLoggedInKey, true);
-    await prefs.setInt(_userIdKey, user.id ?? 0);
-    await prefs.setString(_userEmailKey, user.email);
-    await prefs.setString(_userNameKey, user.username);
-    await prefs.setString(_loginTimeKey, DateTime.now().toIso8601String());
+    
+    // เก็บข้อมูลการเข้าสู่ระบบ
+    await prefs.setBool(_isLoggedInKey, true);                    // สถานะเข้าสู่ระบบ
+    await prefs.setInt(_userIdKey, user.id ?? 0);                 // ID ผู้ใช้
+    await prefs.setString(_userEmailKey, user.email);             // อีเมล
+    await prefs.setString(_userNameKey, user.username);           // ชื่อผู้ใช้
+    await prefs.setString(_loginTimeKey, DateTime.now().toIso8601String()); // เวลาที่เข้าสู่ระบบ
   }
 
   /// ✅ ดึงข้อมูลผู้ใช้ที่ login อยู่
@@ -70,7 +89,7 @@ class AuthService {
       }
       return false;
     } catch (e) {
-      print('❌ Login error: $e');
+      debugPrint('❌ Login error: $e');
       return false;
     }
   }
@@ -115,7 +134,7 @@ class AuthService {
       final user = await _userRepo.getUserByEmail(email);
       return user != null;
     } catch (e) {
-      print('❌ Check email error: $e');
+      debugPrint('❌ Check email error: $e');
       return false;
     }
   }
@@ -136,7 +155,7 @@ class AuthService {
       await _userRepo.addUser(user);
       return true;
     } catch (e) {
-      print('❌ Register error: $e');
+      debugPrint('❌ Register error: $e');
       return false;
     }
   }
