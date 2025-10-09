@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'add_event_page.dart';
 import 'weekly_page.dart'; // ✅ import WeeklyPage
 import '../models/important_day.dart';
 import '../models/event.dart'; // ✅ ใช้ model Event สำหรับ WeeklyPage
@@ -388,7 +387,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     final scaffoldMessenger = ScaffoldMessenger.of(context);
                     final result = await Navigator.pushNamed(
                       context,
-                      AddEventPage.routeName,
+                      '/add',
                     );
 
                     // ✅ รีเฟรชข้อมูลหลังจากเพิ่ม event ใหม่

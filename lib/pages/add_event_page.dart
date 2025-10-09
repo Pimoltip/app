@@ -4,7 +4,6 @@ import '../repo/event_repository.dart';
 import '../models/event.dart';
 
 class AddEventPage extends StatefulWidget {
-  static const routeName = '/add-event';
   const AddEventPage({super.key});
 
   @override

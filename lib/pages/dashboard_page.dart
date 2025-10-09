@@ -1,99 +1,147 @@
+// Import Flutter framework สำหรับสร้าง UI
 import 'package:flutter/material.dart';
 
-// 📱 Pages
-import 'project_calendar.dart';
-import 'new_project_page.dart';
-import 'calendar_page.dart';
+// 📱 Import หน้าต่างๆ ที่เกี่ยวข้อง
+import 'project_calendar.dart';        // หน้าปฏิทินโปรเจกต์
+import 'new_project_page.dart';        // หน้าเพิ่มโปรเจกต์ใหม่
+import 'calendar_page.dart';           // หน้าปฏิทินทั่วไป
 
-// 🗄️ Data & Services
-import '../repo/project_repository.dart';
-import '../models/project.dart';
-import '../services/auth_service.dart';
+// 🗄️ Import ข้อมูลและบริการ
+import '../repo/project_repository.dart';  // จัดการข้อมูลโปรเจกต์
+import '../models/project.dart';           // โครงสร้างข้อมูลโปรเจกต์
+import '../services/auth_service.dart';    // บริการ authentication
 
 /// 📋 การ์ดแสดงข้อมูลโปรเจกต์
-/// แสดงสถิติ countdown, in-progress และปุ่ม appointment
+/// 
+/// StatelessWidget ที่แสดงสถิติโปรเจกต์และปุ่ม appointment
+/// - แสดงจำนวนโปรเจกต์ทั้งหมด
+/// - แสดงจำนวนโปรเจกต์ที่มี countdown (ใกล้ครบกำหนด)
+/// - แสดงจำนวนโปรเจกต์ที่กำลังดำเนินการ
+/// - มีปุ่มสำหรับไปหน้านัดหมาย
 class ProjectCard extends StatelessWidget {
-  final VoidCallback onTapAppointment; // ฟังก์ชันเมื่อกดปุ่ม appointment
-  final List<Project> projects; // รายการโปรเจกต์
+  // ฟังก์ชันที่จะเรียกเมื่อผู้ใช้กดปุ่ม appointment
+  final VoidCallback onTapAppointment;
+  
+  // รายการโปรเจกต์ทั้งหมดที่ใช้คำนวณสถิติ
+  final List<Project> projects;
 
   const ProjectCard({
     super.key,
-    required this.onTapAppointment,
-    required this.projects,
+    required this.onTapAppointment,  // จำเป็นต้องส่งฟังก์ชันมา
+    required this.projects,          // จำเป็นต้องส่งรายการโปรเจกต์มา
   });
 
   @override
   Widget build(BuildContext context) {
     // 📊 คำนวณสถิติจากรายการโปรเจกต์
+    
+    // จำนวนโปรเจกต์ทั้งหมด = จำนวนรายการใน List
     final totalProjects = projects.length;
+    
+    // จำนวนโปรเจกต์ที่กำลังดำเนินการ (ความคืบหน้า 0 < progress < 100)
+    // where() = กรองเฉพาะโปรเจกต์ที่ตรงเงื่อนไข
     final inProgressProjects = projects
         .where((p) => p.progress > 0 && p.progress < 100)
         .length;
 
     // ⏰ คำนวณ countdown (โปรเจกต์ที่มี deadline และยังไม่ครบกำหนด)
     int countdownProjects = 0;
-    final now = DateTime.now();
+    final now = DateTime.now();  // เวลาปัจจุบัน
 
+    // วนลูปผ่านทุกโปรเจกต์เพื่อตรวจสอบ deadline
     for (final project in projects) {
+      // ตรวจสอบว่าโปรเจกต์มี deadline หรือไม่
       if (project.deadline != null) {
         try {
+          // แปลง String deadline เป็น DateTime
           final deadlineDate = DateTime.parse(project.deadline!);
+          
+          // คำนวณจำนวนวันที่เหลือ (deadline - วันนี้)
           final difference = deadlineDate.difference(now).inDays;
+          
+          // ถ้ายังไม่ครบกำหนด (จำนวนวัน >= 0) นับเป็น countdown
           if (difference >= 0) {
             countdownProjects++;
           }
         } catch (e) {
-          // ถ้า parse วันที่ไม่ได้ ให้นับเป็น countdown
+          // ถ้า parse วันที่ไม่ได้ (รูปแบบผิด) ให้นับเป็น countdown
           countdownProjects++;
         }
       }
     }
 
     return Container(
+      // กำหนด padding (ระยะห่างภายใน) ทุกด้าน 16 pixels
       padding: const EdgeInsets.all(16),
+      
+      // กำหนดการตกแต่ง (สี, มุมโค้ง)
       decoration: BoxDecoration(
-        color: Colors.amber.shade50,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.amber.shade50,           // สีพื้นหลังสีเหลืองอ่อน
+        borderRadius: BorderRadius.circular(12), // มุมโค้ง 12 pixels
       ),
+      
       child: Column(
+        // จัดตำแหน่ง children ไปทางซ้าย
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // แสดงหัวข้อการ์ด
           Text(
+            // ถ้ามีโปรเจกต์ แสดงจำนวน, ถ้าไม่มี แสดง "Sample Project"
             totalProjects > 0
                 ? 'My Projects ($totalProjects)'
                 : 'Sample Project',
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
+          
+          // ระยะห่าง 5 pixels
           const SizedBox(height: 5),
+          
+          // แสดงสถิติในรูปแบบแถว (2 กล่อง)
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly, // กระจายพื้นที่เท่ากัน
             children: [
+              // กล่องแสดงจำนวน countdown
               _buildInfoBox(
-                icon: Icons.calendar_today,
-                title: 'Countdowns',
-                value: countdownProjects.toString(),
+                icon: Icons.calendar_today,           // ไอคอนปฏิทิน
+                title: 'Countdowns',                  // หัวข้อ
+                value: countdownProjects.toString(),  // ค่า (จำนวน)
               ),
+              
+              // กล่องแสดงจำนวน in-progress
               _buildInfoBox(
-                icon: Icons.hourglass_bottom,
-                title: 'In-Progress',
-                value: '$inProgressProjects',
+                icon: Icons.hourglass_bottom,         // ไอคอนนาฬิกาทราย
+                title: 'In-Progress',                 // หัวข้อ
+                value: '$inProgressProjects',         // ค่า (จำนวน)
               ),
             ],
           ),
+          
+          // ระยะห่าง 24 pixels
           const SizedBox(height: 24),
+          
+          // หัวข้อปุ่ม appointment
           const Text(
             'Appointment',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
+          
+          // ระยะห่าง 20 pixels
           const SizedBox(height: 20),
+          
+          // ปุ่ม appointment ที่สามารถกดได้
           GestureDetector(
-            onTap: onTapAppointment,
+            onTap: onTapAppointment,  // เรียกฟังก์ชันที่ส่งมาเมื่อกด
             child: Container(
+              // กำหนด padding ภายในปุ่ม
               padding: const EdgeInsets.all(12),
+              
+              // กำหนดการตกแต่งปุ่ม
               decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.circular(8),
+                color: Colors.green,                    // สีพื้นหลังเขียว
+                borderRadius: BorderRadius.circular(8), // มุมโค้ง 8 pixels
               ),
+              
+              // ข้อความในปุ่ม
               child: const Text('Open', style: TextStyle(color: Colors.white)),
             ),
           ),
@@ -102,24 +150,43 @@ class ProjectCard extends StatelessWidget {
     );
   }
 
+  /// สร้างกล่องแสดงข้อมูลสถิติ
+  /// 
+  /// รับพารามิเตอร์:
+  /// - icon: ไอคอนที่จะแสดง
+  /// - title: หัวข้อของข้อมูล
+  /// - value: ค่าของข้อมูล (ตัวเลข)
   Widget _buildInfoBox({
-    required IconData icon,
-    required String title,
-    required String value,
+    required IconData icon,    // ไอคอน (จำเป็น)
+    required String title,     // หัวข้อ (จำเป็น)
+    required String value,     // ค่า (จำเป็น)
   }) {
     return Container(
-      width: 120,
-      padding: const EdgeInsets.all(12),
+      width: 120,                           // ความกว้างคงที่ 120 pixels
+      padding: const EdgeInsets.all(12),    // padding ภายใน 12 pixels
+      
+      // การตกแต่งกล่อง
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+        color: Colors.white,                               // สีพื้นหลังขาว
+        borderRadius: BorderRadius.circular(12),          // มุมโค้ง 12 pixels
+        boxShadow: const [BoxShadow(                      // เงา
+          color: Colors.black12,                           // สีเงา (ดำโปร่งใส 12%)
+          blurRadius: 4,                                   // ความเบลอ 4 pixels
+        )],
       ),
+      
       child: Column(
         children: [
+          // ไอคอนสีเขียว
           Icon(icon, color: Colors.green),
+          
+          // ระยะห่าง 6 pixels
           const SizedBox(height: 6),
+          
+          // หัวข้อ
           Text(title),
+          
+          // ค่าตัวเลข (ตัวหนา)
           Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
@@ -128,53 +195,75 @@ class ProjectCard extends StatelessWidget {
 }
 
 /// 🏠 หน้าแดชบอร์ดหลัก
-/// แสดงโปรเจกต์ทั้งหมดและสถิติ
+/// 
+/// StatefulWidget ที่แสดงโปรเจกต์ทั้งหมดและสถิติ
+/// - แสดงการ์ดสถิติโปรเจกต์
+/// - แสดงรายการโปรเจกต์ในรูปแบบกริด
+/// - มีฟังก์ชันค้นหา, เพิ่ม, ลบ, แก้ไขโปรเจกต์
+/// - มีการนำทางไปหน้าอื่นๆ
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+  
   @override
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
 class _DashboardPageState extends State<DashboardPage> {
   // 🗄️ Services สำหรับจัดการข้อมูล
-  final ProjectRepository _projectRepo = ProjectRepository();
-  final AuthService _authService = AuthService();
+  final ProjectRepository _projectRepo = ProjectRepository();  // จัดการข้อมูลโปรเจกต์
+  final AuthService _authService = AuthService();              // จัดการการเข้าสู่ระบบ
 
-  // 📊 ข้อมูลที่แสดงในหน้า
-  String userName = "Your Name"; // ชื่อผู้ใช้
-  List<Project> projects = []; // รายการโปรเจกต์
+  // 📊 State variables - ข้อมูลที่เปลี่ยนแปลงได้
+  String userName = "Your Name";  // ชื่อผู้ใช้ที่เข้าสู่ระบบ
+  List<Project> projects = [];    // รายการโปรเจกต์ทั้งหมด
 
+  /// ฟังก์ชันที่เรียกเมื่อ widget ถูกสร้าง
+  /// จะโหลดข้อมูลเริ่มต้นสำหรับหน้าแดชบอร์ด
   @override
   void initState() {
     super.initState();
-    _loadUserData(); // โหลดข้อมูลผู้ใช้
-    _loadProjects(); // โหลดรายการโปรเจกต์
+    _loadUserData();    // โหลดข้อมูลผู้ใช้ที่เข้าสู่ระบบ
+    _loadProjects();    // โหลดรายการโปรเจกต์ทั้งหมด
   }
 
   /// 👤 โหลดข้อมูลผู้ใช้ที่เข้าสู่ระบบอยู่
+  /// 
+  /// เรียก AuthService เพื่อดึงข้อมูลผู้ใช้ปัจจุบัน
+  /// และอัปเดต userName เพื่อแสดงใน UI
   Future<void> _loadUserData() async {
     try {
+      // เรียก service เพื่อดึงข้อมูลผู้ใช้
       final user = await _authService.getCurrentUser();
+      
+      // ตรวจสอบว่าได้ข้อมูลผู้ใช้และ widget ยังคงอยู่ในหน้าจอ
       if (user != null && mounted) {
         setState(() {
-          userName = user.username;
+          userName = user.username;  // อัปเดตชื่อผู้ใช้
         });
       }
     } catch (e) {
+      // แสดง error ใน debug console
       debugPrint('❌ Error loading user data: $e');
     }
   }
 
   /// 📋 โหลดรายการโปรเจกต์จากฐานข้อมูล
+  /// 
+  /// เรียก ProjectRepository เพื่อดึงโปรเจกต์ทั้งหมด
+  /// และอัปเดต projects list เพื่อแสดงใน UI
   Future<void> _loadProjects() async {
     try {
+      // เรียก repository เพื่อดึงรายการโปรเจกต์
       final projectsList = await _projectRepo.loadProjects();
+      
+      // ตรวจสอบว่า widget ยังคงอยู่ในหน้าจอ
       if (mounted) {
         setState(() {
-          projects = projectsList;
+          projects = projectsList;  // อัปเดตรายการโปรเจกต์
         });
       }
     } catch (e) {
+      // แสดง error ใน debug console
       debugPrint('❌ Error loading projects: $e');
     }
   }
