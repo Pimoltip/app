@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 // 📱 Pages - หน้าต่างๆ ของแอป
 import 'pages/login_page.dart';
-import 'pages/Signuppage.dart';
+import 'pages/signup_page.dart';
 import 'pages/dashboard_page.dart';
 import 'pages/calendar_page.dart';
-import 'pages/ProjectCalendar.dart';
-import 'pages/AddEventPage.dart';
+import 'pages/project_calendar.dart';
+import 'pages/add_event_page.dart';
 import 'pages/new_project_page.dart';
 import 'pages/weekly_page.dart';
 import 'pages/appoinment_page.dart';
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
 
         // หน้าสมัครสมาชิก
-        '/signup': (context) => const Signuppage(),
+        '/signup': (context) => const SignupPage(),
 
         // หน้าแดชบอร์ดหลัก
         '/dashboard': (context) => const DashboardPage(),

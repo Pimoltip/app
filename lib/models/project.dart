@@ -95,8 +95,8 @@ models/project.dart
 
 ไฟล์ที่เรียกใช้งาน:
 
-repo/in_memory_project_repo.dart (จัดการ data collection)
+repo/project_repository.dart (จัดการ data collection)
 
-widgets/project_card.dart (แสดง UI)
+pages/dashboard_page.dart (แสดง UI)
 
 pages/dashboard_page.dart และ pages/new_project_page.dart (รับค่า/สร้าง project ใหม่)*/

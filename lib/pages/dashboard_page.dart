@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // 📱 Pages
-import 'ProjectCalendar.dart';
+import 'project_calendar.dart';
 import 'new_project_page.dart';
 import 'calendar_page.dart';
 
@@ -161,7 +161,7 @@ class _DashboardPageState extends State<DashboardPage> {
         });
       }
     } catch (e) {
-      print('❌ Error loading user data: $e');
+      debugPrint('❌ Error loading user data: $e');
     }
   }
 
@@ -175,7 +175,7 @@ class _DashboardPageState extends State<DashboardPage> {
         });
       }
     } catch (e) {
-      print('❌ Error loading projects: $e');
+      debugPrint('❌ Error loading projects: $e');
     }
   }
 
@@ -354,9 +354,10 @@ class _DashboardPageState extends State<DashboardPage> {
           PopupMenuButton<String>(
             onSelected: (value) async {
               if (value == 'logout') {
+                final navigator = Navigator.of(context);
                 await _authService.logout();
                 if (mounted) {
-                  Navigator.pushReplacementNamed(context, '/login');
+                  navigator.pushReplacementNamed('/login');
                 }
               }
             },

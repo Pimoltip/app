@@ -18,24 +18,6 @@ class EventRepository {
     });
   }
 
-  /// ✅ Load events by date range
-  Future<List<Event>> loadEventsByDateRange(
-    DateTime start,
-    DateTime end,
-  ) async {
-    final db = await _dbService.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      DatabaseService.eventsTable,
-      where: 'date BETWEEN ? AND ?',
-      whereArgs: [start.toIso8601String(), end.toIso8601String()],
-      orderBy: 'date ASC',
-    );
-
-    return List.generate(maps.length, (i) {
-      return Event.fromMap(maps[i]);
-    });
-  }
-
   /// ✅ Save new event to SQLite
   Future<void> saveEvent(Event newEvent) async {
     final db = await _dbService.database;

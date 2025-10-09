@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Team Meeting",
+    "note": "Weekly team sync",
+    "date": "2024-12-15",
+    "time": "10:00",
+    "alarm": true,
+    "createdAt": "2024-12-10T08:00:00.000Z"
+  },
+  {
+    "title": "Project Deadline",
+    "note": "Final submission",
+    "date": "2024-12-20",
+    "time": "17:00",
+    "alarm": true,
+    "createdAt": "2024-12-10T08:05:00.000Z"
+  },
+  {
+    "title": "Client Presentation",
+    "note": "Product demo",
+    "date": "2024-12-18",
+    "time": "14:30",
+    "alarm": false,
+    "createdAt": "2024-12-10T08:10:00.000Z"
+  }
+]

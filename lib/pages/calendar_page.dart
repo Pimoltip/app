@@ -1,14 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'AddEventPage.dart';
+import 'add_event_page.dart';
 import 'weekly_page.dart'; // ✅ import WeeklyPage
 import '../models/important_day.dart';
 import '../models/event.dart'; // ✅ ใช้ model Event สำหรับ WeeklyPage
-import '../repo/json_file_manager.dart'; // ✅ import JsonFileManager
 import '../repo/event_repository.dart'; // ✅ import EventRepository
 import '../repo/project_repository.dart'; // ✅ import ProjectRepository
 import '../services/auth_service.dart'; // ✅ import AuthService
@@ -33,17 +30,13 @@ class _CalendarPageState extends State<CalendarPage> {
   // ✅ โหลดข้อมูลทั้งหมด
   Future<void> _loadAllData() async {
     try {
-      // ✅ Copy assets to local storage first
-      final eventFile = JsonFileManager('addevent.json');
-      await eventFile.copyFromAsset('assets/events.json');
-
       final impData = await rootBundle.loadString('assets/important_days.json');
       final kuData = await rootBundle.loadString('assets/ku_calendar.json');
-      final eventsData = await rootBundle.loadString('assets/events.json');
+      final evtData = await rootBundle.loadString('assets/events.json');
 
       final impJson = json.decode(impData) as List;
       final kuJson = json.decode(kuData) as List;
-      final evtJson = json.decode(eventsData) as List;
+      final evtJson = json.decode(evtData) as List;
 
       // ✅ โหลด user events จาก SQLite
       final sqliteEvents = await _eventRepo.loadEvents();
@@ -69,6 +62,7 @@ class _CalendarPageState extends State<CalendarPage> {
         ),
       );
 
+      // ✅ system events จาก assets/events.json
       final sysEvents = evtJson.map(
         (e) => ImportantDay(
           title: e['title'] ?? 'System Event',
@@ -153,20 +147,24 @@ class _CalendarPageState extends State<CalendarPage> {
         userEvents.removeWhere((e) => e.id == eventToDelete.id);
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("ลบ Event สำเร็จแล้ว! 🗑️"),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("ลบ Event สำเร็จแล้ว! 🗑️"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (err) {
       debugPrint('❌ Delete user event failed: $err');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("เกิดข้อผิดพลาดในการลบ: $err"),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("เกิดข้อผิดพลาดในการลบ: $err"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -217,9 +215,10 @@ class _CalendarPageState extends State<CalendarPage> {
           PopupMenuButton<String>(
             onSelected: (value) async {
               if (value == 'logout') {
+                final navigator = Navigator.of(context);
                 await _authService.logout();
                 if (mounted) {
-                  Navigator.pushReplacementNamed(context, '/login');
+                  navigator.pushReplacementNamed('/login');
                 }
               }
             },
@@ -268,9 +267,7 @@ class _CalendarPageState extends State<CalendarPage> {
                       Color markerColor;
                       try {
                         markerColor = Color(
-                          int.parse(
-                            (e.color ?? '#FF0000').replaceFirst('#', '0xff'),
-                          ),
+                          int.parse(e.color.replaceFirst('#', '0xff')),
                         );
                       } catch (_) {
                         markerColor = Colors.red;
@@ -388,15 +385,16 @@ class _CalendarPageState extends State<CalendarPage> {
                   backgroundColor: Colors.lightGreen,
                   child: const Icon(Icons.add),
                   onPressed: () async {
+                    final scaffoldMessenger = ScaffoldMessenger.of(context);
                     final result = await Navigator.pushNamed(
                       context,
                       AddEventPage.routeName,
                     );
 
                     // ✅ รีเฟรชข้อมูลหลังจากเพิ่ม event ใหม่
-                    if (result != null) {
+                    if (result != null && mounted) {
                       await _loadAllData();
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      scaffoldMessenger.showSnackBar(
                         const SnackBar(
                           content: Text("เพิ่ม Event ใหม่แล้ว! 🎉"),
                           backgroundColor: Colors.green,

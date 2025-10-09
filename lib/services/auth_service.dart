@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../repo/user_repository.dart';
@@ -70,7 +71,7 @@ class AuthService {
       }
       return false;
     } catch (e) {
-      print('❌ Login error: $e');
+      debugPrint('❌ Login error: $e');
       return false;
     }
   }
@@ -115,7 +116,7 @@ class AuthService {
       final user = await _userRepo.getUserByEmail(email);
       return user != null;
     } catch (e) {
-      print('❌ Check email error: $e');
+      debugPrint('❌ Check email error: $e');
       return false;
     }
   }
@@ -136,7 +137,7 @@ class AuthService {
       await _userRepo.addUser(user);
       return true;
     } catch (e) {
-      print('❌ Register error: $e');
+      debugPrint('❌ Register error: $e');
       return false;
     }
   }
