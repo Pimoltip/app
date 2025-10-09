@@ -58,35 +58,4 @@ class ProjectRepository {
       whereArgs: [name],
     );
   }
-
-  /// ✅ Get project by id
-  Future<Project?> getProjectById(int id) async {
-    final db = await _dbService.database;
-    final List<Map<String, dynamic>> result = await db.query(
-      DatabaseService.projectsTable,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-
-    if (result.isNotEmpty) {
-      return Project.fromMap(result.first);
-    }
-    return null;
-  }
-
-  /// ✅ Search projects by name
-  Future<List<Project>> searchProjects(String query) async {
-    final db = await _dbService.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      DatabaseService.projectsTable,
-      where: 'name LIKE ?',
-      whereArgs: ['%$query%'],
-      orderBy: 'created_at DESC',
-    );
-
-    return List.generate(maps.length, (i) {
-      return Project.fromMap(maps[i]);
-    });
-  }
 }
-

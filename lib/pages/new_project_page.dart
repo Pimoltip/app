@@ -185,6 +185,10 @@ class _NewProjectPageState extends State<NewProjectPage> {
                           _isLoading = true;
                         });
 
+                        // ✅ เก็บ context references ก่อน async operation
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        final navigator = Navigator.of(context);
+
                         try {
                           // ✅ สร้าง Project object
                           final project = Project(
@@ -201,20 +205,19 @@ class _NewProjectPageState extends State<NewProjectPage> {
                           await _projectRepo.addProject(project);
 
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            scaffoldMessenger.showSnackBar(
                               const SnackBar(
                                 content: Text("สร้างโปรเจกต์สำเร็จแล้ว! 🎉"),
                                 backgroundColor: Colors.green,
                               ),
                             );
-                            Navigator.pop(
-                              context,
+                            navigator.pop(
                               true,
                             ); // ส่ง true กลับไปเพื่อบอกว่าเพิ่มสำเร็จ
                           }
                         } catch (e) {
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            scaffoldMessenger.showSnackBar(
                               SnackBar(
                                 content: Text("เกิดข้อผิดพลาด: $e"),
                                 backgroundColor: Colors.red,
