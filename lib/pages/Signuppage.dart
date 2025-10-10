@@ -22,6 +22,7 @@ class _SignuppageState extends State<Signuppage> {
     final pass = passCtrl.text.trim();
     final confirm = confirmCtrl.text.trim();
 
+    // ✅ ตรวจกรอกครบทุกช่อง
     if (name.isEmpty || email.isEmpty || pass.isEmpty || confirm.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -32,6 +33,19 @@ class _SignuppageState extends State<Signuppage> {
       return;
     }
 
+    // ✅ ตรวจรูปแบบอีเมล (ต้องลงท้ายด้วย @ku.th)
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@ku\.th$');
+    if (!emailRegex.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("กรุณาใช้อีเมลที่ลงท้ายด้วย @ku.th เท่านั้น"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // ✅ ตรวจว่ารหัสผ่านตรงกันหรือไม่
     if (pass != confirm) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -42,6 +56,7 @@ class _SignuppageState extends State<Signuppage> {
       return;
     }
 
+    // ✅ ตรวจความยาวรหัสผ่าน
     if (pass.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -52,6 +67,24 @@ class _SignuppageState extends State<Signuppage> {
       return;
     }
 
+    // ✅ ตรวจรูปแบบรหัสผ่าน:
+    // - ต้องมีเฉพาะตัวเลขและอักขระพิเศษ
+    // - ต้องมีตัวพิมพ์ใหญ่อย่างน้อย 1 ตัว
+    // - ต้องมีอักขระพิเศษอย่างน้อย 1 ตัว
+    final RegExp passRegex = RegExp(
+        r'^(?=.*[A-Z])(?=.*[!@#\$%^&*()_+\-=\[\]{};:"\\|,.<>\/?])[A-Za-z0-9!@#\$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]{6,}$');
+
+    if (!passRegex.hasMatch(pass)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("รหัสผ่านต้องมีตัวพิมพ์ใหญ่อย่างน้อย 1 ตัว และอักขระพิเศษอย่างน้อย 1 ตัว"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // ✅ เริ่มสมัครสมาชิก
     setState(() {
       _isLoading = true;
     });
@@ -141,7 +174,7 @@ class _SignuppageState extends State<Signuppage> {
               TextField(
                 controller: emailCtrl,
                 decoration: InputDecoration(
-                  labelText: "Enter Email",
+                  labelText: "Enter Email (@ku.th)",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50),
                   ),
@@ -171,7 +204,7 @@ class _SignuppageState extends State<Signuppage> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: _signUp, // ✅ ใช้ฟังก์ชัน SignUp จริง
+                onPressed: _signUp,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff006866),
                   shape: RoundedRectangleBorder(
