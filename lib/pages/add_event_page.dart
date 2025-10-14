@@ -51,7 +51,7 @@ class _AddEventPageState extends State<AddEventPage> {
   // 🔄 ตัวแปรสำหรับ Repeat และ Deadline (สำหรับ Weekly Event)
   bool _isRepeating = false; // สถานะการทำซ้ำ
   DateTime? _deadlineDate; // วันที่สิ้นสุดการทำซ้ำ
-  List<int> _selectedWeekdays =
+  final List<int> _selectedWeekdays =
       []; // วันในสัปดาห์ที่เลือก (0=อาทิตย์, 1=จันทร์, ..., 6=เสาร์)
 
   @override
