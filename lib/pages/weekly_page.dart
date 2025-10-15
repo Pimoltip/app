@@ -1,4 +1,3 @@
-// Import libraries ที่จำเป็นสำหรับการทำงาน
 import 'dart:convert'; // สำหรับแปลง JSON
 import 'package:flutter/material.dart'; // Flutter UI framework
 import 'package:flutter/services.dart'; // สำหรับโหลดไฟล์ assets
@@ -644,3 +643,4 @@ class _WeeklyPageState extends State<WeeklyPage> {
     }
   }
 }
+
