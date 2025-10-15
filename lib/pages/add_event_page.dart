@@ -1,8 +1,7 @@
-// 📦 Import libraries ที่จำเป็นสำหรับการทำงาน
 import 'package:flutter/cupertino.dart'; // สำหรับ CupertinoDatePicker (time picker แบบ iOS)
-import 'package:flutter/material.dart'; // Flutter UI framework หลัก
-import '../repo/event_repository.dart'; // Repository สำหรับจัดการข้อมูลกิจกรรม
+import 'package:flutter/material.dart'; //  UI framework หลัก
 import '../models/event.dart'; // Model ข้อมูลกิจกรรม
+import '../repo/event_repository.dart'; // Repository สำหรับจัดการข้อมูลกิจกรรม
 import '../services/auth_service.dart'; // Service สำหรับจัดการการเข้าสู่ระบบ
 
 /// 📝 หน้าเพิ่มกิจกรรมใหม่
