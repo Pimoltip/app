@@ -1,8 +1,7 @@
-// 📦 Import libraries ที่จำเป็นสำหรับการทำงาน
-import 'dart:convert'; // สำหรับแปลง JSON data
-import 'package:flutter/material.dart'; // Flutter UI framework หลัก
-import 'package:flutter/services.dart'; // สำหรับเข้าถึง assets files
-import 'package:table_calendar/table_calendar.dart'; // Library สำหรับแสดงปฏิทิน
+import 'package:flutter/material.dart'; //  UI framework 
+import 'dart:convert'; // แปลง JSON เป็นรูปแบบMap/List ของ Dartที่โค้ดเข้าใจ
+import 'package:flutter/services.dart'; // เพื่ออ่านไฟล์ JSON ที่เป็นข้อมูลคงที่จากโฟลเดอร์ assets/
+import 'package:table_calendar/table_calendar.dart'; // Widget สำเร็จรูปสำหรับแสดงปฏิทิน
 import 'weekly_page.dart'; // หน้ามุมมองรายสัปดาห์
 import 'add_event_page.dart'; // หน้าเพิ่มกิจกรรมใหม่
 import '../models/important_day.dart'; // Model สำหรับวันสำคัญ
