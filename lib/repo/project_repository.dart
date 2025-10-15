@@ -1,4 +1,3 @@
-// 📦 Import libraries ที่จำเป็นสำหรับการทำงาน
 import 'package:sqflite/sqflite.dart'; // SQLite database operations สำหรับ Flutter
 import 'database_service.dart'; // Service สำหรับจัดการฐานข้อมูล
 import '../models/project.dart'; // Model ข้อมูลโปรเจกต์
@@ -230,3 +229,4 @@ class ProjectRepository {
     );
   }
 }
+
