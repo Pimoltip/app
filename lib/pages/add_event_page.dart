@@ -577,7 +577,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                   );
 
                                   // 💾 บันทึกข้อมูลลงฐานข้อมูล SQLite
-                                  await repo.addEvent(newEvent);
+                                  await repo.saveEvent(newEvent);
 
                                   // ✅ แสดงข้อความสำเร็จและปิดหน้า
                                   if (mounted) {
