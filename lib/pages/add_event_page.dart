@@ -1,17 +1,18 @@
+// 📦 Import libraries ที่จำเป็นสำหรับการทำงาน
 import 'package:flutter/cupertino.dart'; // สำหรับ CupertinoDatePicker (time picker แบบ iOS)
-import 'package:flutter/material.dart'; //  UI framework หลัก
-import '../models/event.dart'; // Model ข้อมูลกิจกรรม
+import 'package:flutter/material.dart'; // Flutter UI framework หลัก
 import '../repo/event_repository.dart'; // Repository สำหรับจัดการข้อมูลกิจกรรม
+import '../models/event.dart'; // Model ข้อมูลกิจกรรม
 import '../services/auth_service.dart'; // Service สำหรับจัดการการเข้าสู่ระบบ
 
 /// 📝 หน้าเพิ่มกิจกรรมใหม่
+///
 /// StatefulWidget สำหรับเพิ่มกิจกรรมใหม่ในปฏิทิน
 /// - เลือกวันที่และเวลาสำหรับกิจกรรม
 /// - กรอกชื่อและรายละเอียดกิจกรรม
 /// - รองรับฟีเจอร์ Repeat และ Deadline สำหรับ Weekly Event
 /// - บันทึกข้อมูลลงฐานข้อมูล SQLite
 /// - แสดง loading indicator ขณะบันทึก
-
 class AddEventPage extends StatefulWidget {
   final DateTime?
   selectedDate; // วันที่ที่กำหนดไว้ล่วงหน้า (สำหรับ Weekly Event)
@@ -61,6 +62,7 @@ class _AddEventPageState extends State<AddEventPage> {
   }
 
   /// 🧹 ฟังก์ชันที่เรียกเมื่อ widget ถูกทำลาย
+  ///
   /// ใช้สำหรับทำความสะอาด resources เพื่อป้องกัน memory leak
   /// ต้อง dispose TextEditingController ทุกตัวที่สร้างขึ้น
   @override
@@ -164,13 +166,15 @@ class _AddEventPageState extends State<AddEventPage> {
                     // วันอาทิตย์
                     CheckboxListTile(
                       title: const Text('อาทิตย์'),
-                      value: _selectedWeekdays.contains(0),
+                      value: _selectedWeekdays.contains(
+                        7,
+                      ), // เปลี่ยนจาก 0 เป็น 7
                       onChanged: (bool? value) {
                         setDialogState(() {
                           if (value == true) {
-                            _selectedWeekdays.add(0);
+                            _selectedWeekdays.add(7); // เปลี่ยนจาก 0 เป็น 7
                           } else {
-                            _selectedWeekdays.remove(0);
+                            _selectedWeekdays.remove(7); // เปลี่ยนจาก 0 เป็น 7
                           }
                         });
                       },
@@ -284,10 +288,9 @@ class _AddEventPageState extends State<AddEventPage> {
   /// 📅 ฟังก์ชันสำหรับแสดงวันที่เลือกในสัปดาห์
   ///
   /// แปลงหมายเลขวันเป็นชื่อวันภาษาไทย
+  /// ใช้ระบบ DateTime.weekday (1=จันทร์, 2=อังคาร, ..., 7=อาทิตย์)
   String _getWeekdayName(int weekday) {
     switch (weekday) {
-      case 0:
-        return 'อาทิตย์';
       case 1:
         return 'จันทร์';
       case 2:
@@ -300,6 +303,8 @@ class _AddEventPageState extends State<AddEventPage> {
         return 'ศุกร์';
       case 6:
         return 'เสาร์';
+      case 7:
+        return 'อาทิตย์';
       default:
         return '';
     }
@@ -660,7 +665,12 @@ class _AddEventPageState extends State<AddEventPage> {
 }
 
 /// 🎨 Custom Widget: FilledField
-/// TextField ที่มีสไตล์เฉพาะสำหรับใช้ในฟอร์ม - มีสีพื้นหลังเทาอ่อน - ไม่มีขอบ (borderless) - มุมโค้งมน - รองรับหลายบรรทัด
+///
+/// TextField ที่มีสไตล์เฉพาะสำหรับใช้ในฟอร์ม
+/// - มีสีพื้นหลังเทาอ่อน
+/// - ไม่มีขอบ (borderless)
+/// - มุมโค้งมน
+/// - รองรับหลายบรรทัด
 class FilledField extends StatelessWidget {
   final TextEditingController controller; // ตัวควบคุมข้อมูลในช่องกรอก
   final String? hint; // ข้อความแนะนำ (placeholder)
