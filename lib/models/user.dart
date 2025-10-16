@@ -125,7 +125,7 @@ class User {
     'id': id, // ID ในฐานข้อมูล (nullable)
     'email': email, // อีเมลผู้ใช้
     'password': password, // รหัสผ่าน (ควรเข้ารหัสก่อน)
-    'name': username, // ชื่อผู้ใช้ (ใช้ 'name' ในฐานข้อมูล)
+    'name': username, // ชื่อผู้ใช้ (ใช้ 'name' ในฐานข้อมูล)// ⚠️ ข้อสังเกต: ใช้ 'name' เป็น Key สำหรับ 'username'
     'created_at': createdAt.toIso8601String(), // แปลง DateTime เป็น String (ISO format)
   };
 
@@ -215,3 +215,4 @@ class User {
     username: json["username"], // ชื่อผู้ใช้
   );
 }
+
