@@ -74,4 +74,68 @@ lib/
 
 ## License
 
+1. //  ส่วนกรอกเปอร์เซ็นต์ความคืบหน้า
+TextField(
+  controller: progressController,
+  decoration: _filled("Progress (%)"),
+  keyboardType: TextInputType.number,
+  onChanged: (value) {
+    // ตรวจสอบและจำกัดค่า 0-100
+    int? newProgress = int.tryParse(value);
+    if (newProgress != null && newProgress >= 0 && newProgress <= 100) {
+      progress = newProgress;
+      setState(() {});
+    }
+  },
+),
+const SizedBox(height: 6),
+Text("Progress: $progress%"), // แสดงเปอร์เซ็นต์ความคืบหน้า
+
+2. เพิ่ม Progress Controller
+เพิ่มที่บรรทัด 48 (หลัง nameCtrl):
+/// Controller สำหรับช่องกรอกชื่อโปรเจกต์
+final nameCtrl = TextEditingController();
+
+/// Controller สำหรับช่องกรอกเปอร์เซ็นต์ความคืบหน้า
+final progressController = TextEditingController();
+3. แก้ไขฟังก์ชัน recalc()แก้ไขที่บรรทัด 124-128:
+void _recalc() {
+  // ไม่ต้องคำนวณอัตโนมัติ เพราะผู้ใช้กรอกเอง
+  // progress จะถูกอัปเดตใน onChanged ของ TextField
+  setState(() {});
+}
+4. เพิ่มการตรวจสอบข้อมูลเพิ่มฟังก์ชันตรวจสอบที่บรรทัด 129:
+   /// ตรวจสอบและจำกัดค่า progress ให้อยู่ในช่วง 0-100
+void _validateProgress(String value) {
+  int? newProgress = int.tryParse(value);
+  if (newProgress != null) {
+    if (newProgress < 0) {
+      progress = 0;
+      progressController.text = "0";
+    } else if (newProgress > 100) {
+      progress = 100;
+      progressController.text = "100";
+    } else {
+      progress = newProgress;
+    }
+    setState(() {});
+  }
+}
+5. โค้ดเต็มที่ต้องแก้ไข
+// ส่วนกรอกเปอร์เซ็นต์ความคืบหน้า
+TextField(
+  controller: progressController,
+  decoration: _filled("Progress (%)"),
+  keyboardType: TextInputType.number,
+  onChanged: _validateProgress,
+),
+const SizedBox(height: 6),
+Text("Progress: $progress%"), // แสดงเปอร์เซ็นต์ความคืบหน้า
+6. เพิ่มการตั้งค่าเริ่มต้นเพิ่มใน initState() (ถ้ามี):
+@override
+void initState() {
+  super.initState();
+  progressController.text = "0"; // เริ่มต้นที่ 0%
+}
+
 This project is licensed under the MIT License.
